@@ -1,64 +1,64 @@
 // @ts-check
-import React, { useState, useEffect } from 'react';
-import PropTypes from 'prop-types';
-import { useIntl } from '@edx/frontend-platform/i18n';
+import React, { useState, useEffect } from 'react'
+import PropTypes from 'prop-types'
+import { useIntl } from '@edx/frontend-platform/i18n'
 import {
   Button,
   Container,
   Layout,
   Row,
   TransitionReplace,
-  Toast,
-} from '@openedx/paragon';
-import { Helmet } from 'react-helmet';
+  Toast
+} from '@openedx/paragon'
+import { Helmet } from 'react-helmet'
 import {
   Add as IconAdd,
-  CheckCircle as CheckCircleIcon,
-} from '@openedx/paragon/icons';
-import { useSelector } from 'react-redux';
+  CheckCircle as CheckCircleIcon
+} from '@openedx/paragon/icons'
+import { useSelector } from 'react-redux'
 import {
   arrayMove,
   SortableContext,
-  verticalListSortingStrategy,
-} from '@dnd-kit/sortable';
-import { useLocation } from 'react-router-dom';
+  verticalListSortingStrategy
+} from '@dnd-kit/sortable'
+import { useLocation } from 'react-router-dom'
 
-import { LoadingSpinner } from '../generic/Loading';
-import { getProcessingNotification } from '../generic/processing-notification/data/selectors';
-import { RequestStatus } from '../data/constants';
-import SubHeader from '../generic/sub-header/SubHeader';
-import ProcessingNotification from '../generic/processing-notification';
-import InternetConnectionAlert from '../generic/internet-connection-alert';
-import DeleteModal from '../generic/delete-modal/DeleteModal';
-import ConfigureModal from '../generic/configure-modal/ConfigureModal';
-import AlertMessage from '../generic/alert-message';
-import getPageHeadTitle from '../generic/utils';
-import { getCurrentItem, getProctoredExamsFlag } from './data/selectors';
-import { COURSE_BLOCK_NAMES } from './constants';
-import HeaderNavigations from './header-navigations/HeaderNavigations';
-import OutlineSideBar from './outline-sidebar/OutlineSidebar';
-import StatusBar from './status-bar/StatusBar';
-import EnableHighlightsModal from './enable-highlights-modal/EnableHighlightsModal';
-import SectionCard from './section-card/SectionCard';
-import SubsectionCard from './subsection-card/SubsectionCard';
-import UnitCard from './unit-card/UnitCard';
-import HighlightsModal from './highlights-modal/HighlightsModal';
-import EmptyPlaceholder from './empty-placeholder/EmptyPlaceholder';
-import PublishModal from './publish-modal/PublishModal';
-import PageAlerts from './page-alerts/PageAlerts';
-import DraggableList from '../generic/drag-helper/DraggableList';
+import { LoadingSpinner } from '../generic/Loading'
+import { getProcessingNotification } from '../generic/processing-notification/data/selectors'
+import { RequestStatus } from '../data/constants'
+import SubHeader from '../generic/sub-header/SubHeader'
+import ProcessingNotification from '../generic/processing-notification'
+import InternetConnectionAlert from '../generic/internet-connection-alert'
+import DeleteModal from '../generic/delete-modal/DeleteModal'
+import ConfigureModal from '../generic/configure-modal/ConfigureModal'
+import AlertMessage from '../generic/alert-message'
+import getPageHeadTitle from '../generic/utils'
+import { getCurrentItem, getProctoredExamsFlag } from './data/selectors'
+import { COURSE_BLOCK_NAMES } from './constants'
+import HeaderNavigations from './header-navigations/HeaderNavigations'
+// import OutlineSideBar from './outline-sidebar/OutlineSidebar'
+import StatusBar from './status-bar/StatusBar'
+import EnableHighlightsModal from './enable-highlights-modal/EnableHighlightsModal'
+import SectionCard from './section-card/SectionCard'
+import SubsectionCard from './subsection-card/SubsectionCard'
+import UnitCard from './unit-card/UnitCard'
+import HighlightsModal from './highlights-modal/HighlightsModal'
+import EmptyPlaceholder from './empty-placeholder/EmptyPlaceholder'
+import PublishModal from './publish-modal/PublishModal'
+import PageAlerts from './page-alerts/PageAlerts'
+import DraggableList from '../generic/drag-helper/DraggableList'
 import {
   canMoveSection,
   possibleUnitMoves,
-  possibleSubsectionMoves,
-} from '../generic/drag-helper/utils';
-import { useCourseOutline } from './hooks';
-import messages from './messages';
-import { getTagsExportFile } from './data/api';
+  possibleSubsectionMoves
+} from '../generic/drag-helper/utils'
+import { useCourseOutline } from './hooks'
+import messages from './messages'
+import { getTagsExportFile } from './data/api'
 
 const CourseOutline = ({ courseId }) => {
-  const intl = useIntl();
-  const location = useLocation();
+  const intl = useIntl()
+  const location = useLocation()
 
   const {
     courseName,
@@ -118,42 +118,53 @@ const CourseOutline = ({ courseId }) => {
     handleSectionDragAndDrop,
     handleSubsectionDragAndDrop,
     handleUnitDragAndDrop,
-    errors,
-  } = useCourseOutline({ courseId });
+    errors
+  } = useCourseOutline({ courseId })
 
   // Use `setToastMessage` to show the toast.
-  const [toastMessage, setToastMessage] = useState(/** @type{null|string} */ (null));
+  const [toastMessage, setToastMessage] = useState(
+    /** @type{null|string} */ (null)
+  )
 
   useEffect(() => {
     // Wait for the course data to load before exporting tags.
     if (courseId && courseName && location.hash === '#export-tags') {
-      setToastMessage(intl.formatMessage(messages.exportTagsCreatingToastMessage));
-      getTagsExportFile(courseId, courseName).then(() => {
-        setToastMessage(intl.formatMessage(messages.exportTagsSuccessToastMessage));
-      }).catch(() => {
-        setToastMessage(intl.formatMessage(messages.exportTagsErrorToastMessage));
-      });
+      setToastMessage(
+        intl.formatMessage(messages.exportTagsCreatingToastMessage)
+      )
+      getTagsExportFile(courseId, courseName)
+        .then(() => {
+          setToastMessage(
+            intl.formatMessage(messages.exportTagsSuccessToastMessage)
+          )
+        })
+        .catch(() => {
+          setToastMessage(
+            intl.formatMessage(messages.exportTagsErrorToastMessage)
+          )
+        })
 
       // Delete `#export-tags` from location
-      window.location.href = '#';
+      window.location.href = '#'
     }
-  }, [location, courseId, courseName]);
+  }, [location, courseId, courseName])
 
-  const [sections, setSections] = useState(sectionsList);
+  const [sections, setSections] = useState(sectionsList)
 
   const restoreSectionList = () => {
-    setSections(() => [...sectionsList]);
-  };
+    setSections(() => [...sectionsList])
+  }
 
   const {
     isShow: isShowProcessingNotification,
-    title: processingNotificationTitle,
-  } = useSelector(getProcessingNotification);
+    title: processingNotificationTitle
+  } = useSelector(getProcessingNotification)
 
-  const currentItemData = useSelector(getCurrentItem);
-  const deleteCategory = COURSE_BLOCK_NAMES[currentItemData.category]?.name.toLowerCase();
+  const currentItemData = useSelector(getCurrentItem)
+  const deleteCategory =
+    COURSE_BLOCK_NAMES[currentItemData.category]?.name.toLowerCase()
 
-  const enableProctoredExams = useSelector(getProctoredExamsFlag);
+  const enableProctoredExams = useSelector(getProctoredExamsFlag)
 
   /**
    * Move section to new index
@@ -162,14 +173,14 @@ const CourseOutline = ({ courseId }) => {
    */
   const updateSectionOrderByIndex = (currentIndex, newIndex) => {
     if (currentIndex === newIndex) {
-      return;
+      return
     }
-    setSections((prevSections) => {
-      const newSections = arrayMove(prevSections, currentIndex, newIndex);
-      handleSectionDragAndDrop(newSections.map(section => section.id));
-      return newSections;
-    });
-  };
+    setSections(prevSections => {
+      const newSections = arrayMove(prevSections, currentIndex, newIndex)
+      handleSectionDragAndDrop(newSections.map(section => section.id))
+      return newSections
+    })
+  }
 
   /**
    * Uses details from move information and moves subsection
@@ -178,21 +189,21 @@ const CourseOutline = ({ courseId }) => {
    * @returns {void}
    */
   const updateSubsectionOrderByIndex = (section, moveDetails) => {
-    const { fn, args, sectionId } = moveDetails;
+    const { fn, args, sectionId } = moveDetails
     if (!args) {
-      return;
+      return
     }
-    const [sectionsCopy, newSubsections] = fn(...args);
+    const [sectionsCopy, newSubsections] = fn(...args)
     if (newSubsections && sectionId) {
-      setSections(sectionsCopy);
+      setSections(sectionsCopy)
       handleSubsectionDragAndDrop(
         sectionId,
         section.id,
         newSubsections.map(subsection => subsection.id),
-        restoreSectionList,
-      );
+        restoreSectionList
+      )
     }
-  };
+  }
 
   /**
    * Uses details from move information and moves unit
@@ -201,28 +212,26 @@ const CourseOutline = ({ courseId }) => {
    * @returns {void}
    */
   const updateUnitOrderByIndex = (section, moveDetails) => {
-    const {
-      fn, args, sectionId, subsectionId,
-    } = moveDetails;
+    const { fn, args, sectionId, subsectionId } = moveDetails
     if (!args) {
-      return;
+      return
     }
-    const [sectionsCopy, newUnits] = fn(...args);
+    const [sectionsCopy, newUnits] = fn(...args)
     if (newUnits && sectionId && subsectionId) {
-      setSections(sectionsCopy);
+      setSections(sectionsCopy)
       handleUnitDragAndDrop(
         sectionId,
         section.id,
         subsectionId,
         newUnits.map(unit => unit.id),
-        restoreSectionList,
-      );
+        restoreSectionList
+      )
     }
-  };
+  }
 
   useEffect(() => {
-    setSections(sectionsList);
-  }, [sectionsList]);
+    setSections(sectionsList)
+  }, [sectionsList])
 
   if (isLoading) {
     // eslint-disable-next-line react/jsx-no-useless-fragment
@@ -230,13 +239,18 @@ const CourseOutline = ({ courseId }) => {
       <Row className="m-0 mt-4 justify-content-center">
         <LoadingSpinner />
       </Row>
-    );
+    )
   }
 
   return (
     <>
       <Helmet>
-        <title>{getPageHeadTitle(courseName, intl.formatMessage(messages.headingTitle))}</title>
+        <title>
+          {getPageHeadTitle(
+            courseName,
+            intl.formatMessage(messages.headingTitle)
+          )}
+        </title>
       </Helmet>
       <Container size="xl" className="px-4">
         <section className="course-outline-container mb-4 mt-5">
@@ -262,17 +276,23 @@ const CourseOutline = ({ courseId }) => {
                 variant="success"
                 icon={CheckCircleIcon}
                 title={intl.formatMessage(messages.alertSuccessTitle)}
-                description={intl.formatMessage(messages.alertSuccessDescription)}
+                description={intl.formatMessage(
+                  messages.alertSuccessDescription
+                )}
                 aria-hidden="true"
-                aria-labelledby={intl.formatMessage(messages.alertSuccessAriaLabelledby)}
-                aria-describedby={intl.formatMessage(messages.alertSuccessAriaDescribedby)}
+                aria-labelledby={intl.formatMessage(
+                  messages.alertSuccessAriaLabelledby
+                )}
+                aria-describedby={intl.formatMessage(
+                  messages.alertSuccessAriaDescribedby
+                )}
               />
             ) : null}
           </TransitionReplace>
           <SubHeader
             title={intl.formatMessage(messages.headingTitle)}
             subtitle={intl.formatMessage(messages.headingSubtitle)}
-            headerActions={(
+            headerActions={
               <HeaderNavigations
                 isReIndexShow={isReIndexShow}
                 isSectionsExpanded={isSectionsExpanded}
@@ -282,7 +302,7 @@ const CourseOutline = ({ courseId }) => {
                 courseActions={courseActions}
                 errors={errors}
               />
-            )}
+            }
           />
           <Layout
             lg={[{ span: 9 }, { span: 3 }]}
@@ -300,7 +320,9 @@ const CourseOutline = ({ courseId }) => {
                       isLoading={isLoading}
                       statusBarData={statusBarData}
                       openEnableHighlightsModal={openEnableHighlightsModal}
-                      handleVideoSharingOptionChange={handleVideoSharingOptionChange}
+                      handleVideoSharingOptionChange={
+                        handleVideoSharingOptionChange
+                      }
                     />
                     {!errors?.outlineIndexApi && (
                       <div className="pt-4">
@@ -310,8 +332,12 @@ const CourseOutline = ({ courseId }) => {
                               items={sections}
                               setSections={setSections}
                               restoreSectionList={restoreSectionList}
-                              handleSectionDragAndDrop={handleSectionDragAndDrop}
-                              handleSubsectionDragAndDrop={handleSubsectionDragAndDrop}
+                              handleSectionDragAndDrop={
+                                handleSectionDragAndDrop
+                              }
+                              handleSubsectionDragAndDrop={
+                                handleSubsectionDragAndDrop
+                              }
                               handleUnitDragAndDrop={handleUnitDragAndDrop}
                             >
                               <SortableContext
@@ -326,16 +352,24 @@ const CourseOutline = ({ courseId }) => {
                                     index={sectionIndex}
                                     canMoveItem={canMoveSection(sections)}
                                     isSelfPaced={statusBarData.isSelfPaced}
-                                    isCustomRelativeDatesActive={isCustomRelativeDatesActive}
+                                    isCustomRelativeDatesActive={
+                                      isCustomRelativeDatesActive
+                                    }
                                     savingStatus={savingStatus}
-                                    onOpenHighlightsModal={handleOpenHighlightsModal}
+                                    onOpenHighlightsModal={
+                                      handleOpenHighlightsModal
+                                    }
                                     onOpenPublishModal={openPublishModal}
                                     onOpenConfigureModal={openConfigureModal}
                                     onOpenDeleteModal={openDeleteModal}
                                     onEditSectionSubmit={handleEditSubmit}
-                                    onDuplicateSubmit={handleDuplicateSectionSubmit}
+                                    onDuplicateSubmit={
+                                      handleDuplicateSectionSubmit
+                                    }
                                     isSectionsExpanded={isSectionsExpanded}
-                                    onNewSubsectionSubmit={handleNewSubsectionSubmit}
+                                    onNewSubsectionSubmit={
+                                      handleNewSubsectionSubmit
+                                    }
                                     onOrderChange={updateSectionOrderByIndex}
                                   >
                                     <SortableContext
@@ -343,67 +377,112 @@ const CourseOutline = ({ courseId }) => {
                                       items={section.childInfo.children}
                                       strategy={verticalListSortingStrategy}
                                     >
-                                      {section.childInfo.children.map((subsection, subsectionIndex) => (
-                                        <SubsectionCard
-                                          key={subsection.id}
-                                          section={section}
-                                          subsection={subsection}
-                                          index={subsectionIndex}
-                                          getPossibleMoves={possibleSubsectionMoves(
-                                            [...sections],
-                                            sectionIndex,
-                                            section,
-                                            section.childInfo.children,
-                                          )}
-                                          isSelfPaced={statusBarData.isSelfPaced}
-                                          isCustomRelativeDatesActive={isCustomRelativeDatesActive}
-                                          savingStatus={savingStatus}
-                                          onOpenPublishModal={openPublishModal}
-                                          onOpenDeleteModal={openDeleteModal}
-                                          onEditSubmit={handleEditSubmit}
-                                          onDuplicateSubmit={handleDuplicateSubsectionSubmit}
-                                          onOpenConfigureModal={openConfigureModal}
-                                          onNewUnitSubmit={handleNewUnitSubmit}
-                                          onOrderChange={updateSubsectionOrderByIndex}
-                                          onPasteClick={handlePasteClipboardClick}
-                                        >
-                                          <SortableContext
-                                            id={subsection.id}
-                                            items={subsection.childInfo.children}
-                                            strategy={verticalListSortingStrategy}
+                                      {section.childInfo.children.map(
+                                        (subsection, subsectionIndex) => (
+                                          <SubsectionCard
+                                            key={subsection.id}
+                                            section={section}
+                                            subsection={subsection}
+                                            index={subsectionIndex}
+                                            getPossibleMoves={possibleSubsectionMoves(
+                                              [...sections],
+                                              sectionIndex,
+                                              section,
+                                              section.childInfo.children
+                                            )}
+                                            isSelfPaced={
+                                              statusBarData.isSelfPaced
+                                            }
+                                            isCustomRelativeDatesActive={
+                                              isCustomRelativeDatesActive
+                                            }
+                                            savingStatus={savingStatus}
+                                            onOpenPublishModal={
+                                              openPublishModal
+                                            }
+                                            onOpenDeleteModal={openDeleteModal}
+                                            onEditSubmit={handleEditSubmit}
+                                            onDuplicateSubmit={
+                                              handleDuplicateSubsectionSubmit
+                                            }
+                                            onOpenConfigureModal={
+                                              openConfigureModal
+                                            }
+                                            onNewUnitSubmit={
+                                              handleNewUnitSubmit
+                                            }
+                                            onOrderChange={
+                                              updateSubsectionOrderByIndex
+                                            }
+                                            onPasteClick={
+                                              handlePasteClipboardClick
+                                            }
                                           >
-                                            {subsection.childInfo.children.map((unit, unitIndex) => (
-                                              <UnitCard
-                                                key={unit.id}
-                                                unit={unit}
-                                                subsection={subsection}
-                                                section={section}
-                                                isSelfPaced={statusBarData.isSelfPaced}
-                                                isCustomRelativeDatesActive={isCustomRelativeDatesActive}
-                                                index={unitIndex}
-                                                getPossibleMoves={possibleUnitMoves(
-                                                  [...sections],
-                                                  sectionIndex,
-                                                  subsectionIndex,
-                                                  section,
-                                                  subsection,
-                                                  subsection.childInfo.children,
-                                                )}
-                                                savingStatus={savingStatus}
-                                                onOpenPublishModal={openPublishModal}
-                                                onOpenConfigureModal={openConfigureModal}
-                                                onOpenDeleteModal={openDeleteModal}
-                                                onEditSubmit={handleEditSubmit}
-                                                onDuplicateSubmit={handleDuplicateUnitSubmit}
-                                                getTitleLink={getUnitUrl}
-                                                onOrderChange={updateUnitOrderByIndex}
-                                                onCopyToClipboardClick={handleCopyToClipboardClick}
-                                                discussionsSettings={discussionsSettings}
-                                              />
-                                            ))}
-                                          </SortableContext>
-                                        </SubsectionCard>
-                                      ))}
+                                            <SortableContext
+                                              id={subsection.id}
+                                              items={
+                                                subsection.childInfo.children
+                                              }
+                                              strategy={
+                                                verticalListSortingStrategy
+                                              }
+                                            >
+                                              {subsection.childInfo.children.map(
+                                                (unit, unitIndex) => (
+                                                  <UnitCard
+                                                    key={unit.id}
+                                                    unit={unit}
+                                                    subsection={subsection}
+                                                    section={section}
+                                                    isSelfPaced={
+                                                      statusBarData.isSelfPaced
+                                                    }
+                                                    isCustomRelativeDatesActive={
+                                                      isCustomRelativeDatesActive
+                                                    }
+                                                    index={unitIndex}
+                                                    getPossibleMoves={possibleUnitMoves(
+                                                      [...sections],
+                                                      sectionIndex,
+                                                      subsectionIndex,
+                                                      section,
+                                                      subsection,
+                                                      subsection.childInfo
+                                                        .children
+                                                    )}
+                                                    savingStatus={savingStatus}
+                                                    onOpenPublishModal={
+                                                      openPublishModal
+                                                    }
+                                                    onOpenConfigureModal={
+                                                      openConfigureModal
+                                                    }
+                                                    onOpenDeleteModal={
+                                                      openDeleteModal
+                                                    }
+                                                    onEditSubmit={
+                                                      handleEditSubmit
+                                                    }
+                                                    onDuplicateSubmit={
+                                                      handleDuplicateUnitSubmit
+                                                    }
+                                                    getTitleLink={getUnitUrl}
+                                                    onOrderChange={
+                                                      updateUnitOrderByIndex
+                                                    }
+                                                    onCopyToClipboardClick={
+                                                      handleCopyToClipboardClick
+                                                    }
+                                                    discussionsSettings={
+                                                      discussionsSettings
+                                                    }
+                                                  />
+                                                )
+                                              )}
+                                            </SortableContext>
+                                          </SubsectionCard>
+                                        )
+                                      )}
                                     </SortableContext>
                                   </SectionCard>
                                 ))}
@@ -435,7 +514,7 @@ const CourseOutline = ({ courseId }) => {
               </article>
             </Layout.Element>
             <Layout.Element>
-              <OutlineSideBar courseId={courseId} />
+              {/* <OutlineSideBar courseId={courseId} /> */}
             </Layout.Element>
           </Layout>
           <EnableHighlightsModal
@@ -490,11 +569,11 @@ const CourseOutline = ({ courseId }) => {
         </Toast>
       )}
     </>
-  );
-};
+  )
+}
 
 CourseOutline.propTypes = {
-  courseId: PropTypes.string.isRequired,
-};
+  courseId: PropTypes.string.isRequired
+}
 
-export default CourseOutline;
+export default CourseOutline
