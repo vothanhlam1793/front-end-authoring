@@ -514,6 +514,9 @@ const CourseOutline = ({ courseId }) => {
               </article>
             </Layout.Element>
             <Layout.Element>
+              <div>
+                <h1>VERON LMS</h1>
+              </div>
               {/* <OutlineSideBar courseId={courseId} /> */}
             </Layout.Element>
           </Layout>
